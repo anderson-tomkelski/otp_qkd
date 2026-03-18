@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include "crypto.h"
+#include "key_fetch.h"
+
+int main() {
+    int sock, client;
+    struct sockaddr_in server, cli;
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(8080);
+    server.sin_addr.s_addr = INADDR_ANY;
+
+    bind(sock, (struct sockaddr*)&server, sizeof(server));
+    listen(sock, 1);
+
+    socklen_t c = sizeof(cli);
+    client = accept(sock, (struct sockaddr*)&cli, &c);
+
+    char key_id[KEY_ID_SIZE];
+    recv(client, key_id, KEY_ID_SIZE, 0);
+
+    int len;
+    recv(client, &len, sizeof(int), 0);
+
+    unsigned char buffer[4096];
+    recv(client, buffer, len, 0);
+
+    otp_key_t key;
+    get_key_receiver(key_id, &key);
+
+    otp_encrypt(buffer, key.key, len);
+
+    buffer[len] = '\0';
+    printf("Decrypted: %s\n", buffer);
+
+    close(client);
+    close(sock);
+}

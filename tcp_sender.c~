@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include "crypto.h"
+#include "key_fetch.h"
+
+int main() {
+    int sock;
+    struct sockaddr_in server;
+    char message[] = "HELLO OTP TCP";
+
+    otp_key_t key;
+    get_key_sender(&key);
+
+    otp_encrypt((unsigned char*)message, key.key, strlen(message));
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(8080);
+    inet_pton(AF_INET, "127.0.0.1", &server.sin_addr);
+
+    connect(sock, (struct sockaddr*)&server, sizeof(server));
+
+    // envia key_id + tamanho + payload
+    send(sock, key.key_id, KEY_ID_SIZE, 0);
+
+    int len = strlen(message);
+    send(sock, &len, sizeof(int), 0);
+
+    send(sock, message, len, 0);
+
+    close(sock);
+}
