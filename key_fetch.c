@@ -146,9 +146,9 @@ int get_key_sender(otp_key_t *key, int size_bytes) {
 
     return fetch_from_api(
         url,
-        "alice_client1.crt",
-        "alice_client1.key",
-        "rootCA_auth.crt",
+        "/home/quiin/quiin-prototypes/data/certs/leaf/sae_01/leaf.fullchain.pem",
+        "/home/quiin/quiin-prototypes/data/certs/leaf/sae_01/leaf.key.pem",
+        "/home/quiin/quiin-prototypes/data/certs/root/certs/root.cert.pem",
         "enx00e04c690502",
         key
     );
@@ -170,9 +170,9 @@ int get_key_receiver(const char *key_id, otp_key_t *key) {
 
     return fetch_from_api(
         url,
-        "bob_client1.crt",
-        "bob_client1.key",
-        "rootCA_auth.crt",
+        "/home/quiin/quiin-prototypes/data/certs/leaf/sae_02/leaf.fullchain.pem",
+        "/home/quiin/quiin-prototypes/data/certs/leaf/sae_02/leaf.key.pem",
+        "/home/quiin/quiin-prototypes/data/certs/root/certs/root.cert.pem",
         "enp3s0",
         key
     );
